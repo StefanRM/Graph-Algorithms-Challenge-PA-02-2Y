@@ -1,0 +1,102 @@
+.___________. _______ .___  ___.      ___          ___      
+|           ||   ____||   \/   |     /   \        |__ \     
+`---|  |----`|  |__   |  \  /  |    /  ^  \          ) |    
+    |  |     |   __|  |  |\/|  |   /  /_\  \        / /     
+    |  |     |  |____ |  |  |  |  /  _____  \      / /_     
+    |__|     |_______||__|  |__| /__/     \__\    |____|    
+                                                            
+Nume   : Maftei Stefan - Radu
+Grupa  : 324CD
+Materie: PA
+
+
+
+	Pentru fiecare problema am utilizat clasa MyScanner pentru a citi
+eficient din fisier. Clasa a fost pusa la dispozitie pe forumul de pe
+cs.curs.pub.ro. Pentru clasa Graph, sortarea topologica si bfs() am utilizat
+solutiile scrise de mine in cadrul laboratorului 6.
+
+
+
+=== Problema 1 ===
+Algoritm folosit: Sortare topologica
+Complexitate: -> crearea grafului: O(n * l), n - nr cuvinte;
+					     l - lungime minima medie cuvant;
+	      -> sortare topologica: O(v + m), v - nr noduri (literele);
+					       m - nr muchii;
+		- retinerea solutiei pentru sortarea topologica e O(1)
+		(adaugare la inceputul unei liste).
+Complexitate finala: O(v + m + n * l).
+
+	Pentru rezolvarea acestei probleme iau doua cate doua cuvinte si
+parcurg caracterele lor in tandem pana gasesc o diferenta intre doua
+caractere (parcurg pana la minimul dintre lungimi). Folosind un map stochez
+caracterele gasite (ele vor fi noduri), avand cheia caracterul si valoarea
+intregul (indexul nodului). Caracterele care produc diferenta gasita sunt
+verificate daca sunt deja noduri in graf (apartin map-ului). Daca sunt deja
+noduri se preia indexul caracterelor din map. Daca nu sunt, se adauga in
+map, marindu-se numarul de noduri si adaugandu-se o lista vida in dreptul
+noilor noduri. Apoi se adauga o muchie dinspre caracterul primului cuvant
+catre caracterul celui de al doilea cuvant. Retin faptul ca am adaugat.
+	Verific apoi daca ordinea lexicografica este corecta si daca nu s-a
+gasit deja un caracter, caz in care se afiseaza "Imposibil". Voi retine acest
+lucru pentru a incheia algoritmul, considerand ca exista un ciclu, pentru a
+limita numarul de variabile. (oricum ciclul produce de asemenea "Imposibil").
+	Daca toata analiza cuvintelor s-a produs cu succes, execut sortarea
+topologica folosind metoda cu DFS. Astfel retin intr-un vector gradul de
+colorare (descoperire) si apelez pentru fiecare nod alb (nedescoperit)
+cautarea in adancime (DFS). Daca in cadrul functiei DFS se ajunge sa se
+analizeze un nod gri inseamna ca exista ciclu, si retin acest lucru, deoarece
+se afiseaza "Imposibil" si programul se termina. Daca nu exista ciclu se
+adauga nodul descoperit (negru) in lista solutiilor si se merge mai departe.
+	Daca in urma sortarii topologice nu s-a gasit vreun ciclu se afiseaza
+caracterele din lista solutie si apoi se afiseaza caracterele de la 'a' la 'z'
+care nu fac parte din solutie, obtinand astfel o permutare. (folosesc functia
+getKeyMap() care cauta in cheia map-ului careia ii corespunde valoarea/indexul
+nodului dat ca parametru) 
+	Daca in urma sortarii topologice s-a gasit vreun ciclu se afiseaza
+"Imposibil". Rezultatul este trecut in fisierul de iesire.
+
+
+
+=== Problema 3 ===
+Algoritm folosit: BFS
+Complexitate: O(n + m), n - nr de noduri;
+		        m - nr de muchii.
+Complexitatile din algoritm sunt adunate, iar pentru ca BFS are complexitatea
+cea mai mare, aceasta va predomina, deci avem:
+Complexitate finala: O(n + m).
+
+	Pentru rezolvarea acestei probleme folosesc aceeasi structura pentru
+graf cu liste de adiacenta, unde indexarea nodurilor incepe de la zero.
+Astfel voi cauta nr de cai minime de la (N-1) la 0.
+	Functia bfs() implementata numara in timpul parcurgerii si numarul de
+cai care intra in fiecare nod (dinspre directia nod start -> nod stop).
+Pentru fiecare nod nedescoperit se actualizeaza distanta fata de nodul start,
+parintele nodului curent, caile nodului curent (egale cu caile parintelui),
+marcandu-se ca nod in curs de descoperire (gri), si se adauga in coada.
+Nodurile in curs de descoperire sau deja descoperite sunt analizate astfel:
+- daca nu este nodul start (acesta nu poate avea alt numar de cai decat 1) si
+s-a gasit un nou parinte (care produce o cale mai scurta de la nodul start
+catre el) se actualizeaza parintele si numarul de cai ale nodului cu cele ale
+noului parinte;
+- daca nu este nodul start si distanta de la start la nodul vecin este aceeasi
+cu cea de la nodul start la parintele nodului curent inseamna ca s-a gasit o
+cale noua si se adauga cailor deja existente toate caile din nodul vecin pentru
+ca se poate merge pe oricare dintre ele.
+	Nodul apoi se marcheaza ca fiind descoperit (negru). Se va returna
+numarul de cai din nodul stop, in care se afla toate caile minime dinspre
+nodul start spre nodul stop.
+	Astfel voi apela functia de doua ori pe doi vectori diferiti pentru
+a retine caile fiecarui nod dinspre directia 0 -> (N - 1) si (N - 1) -> 0.
+Numarul de drumuri in total pentru fiecare nod va fi produsul dintre aceste
+rezultate pentru fiecare nod. Se afiseaza direct rezultatul din BFS in fisier
+deoarece oricare apel dintre cele doua produce acelasi rezultat, iar produsul
+ar fi 1 * nr_cai_minime (deoarece prin nodul de start intra doar o singura
+cale din directia nod start -> nod stop).
+	Pentru medie avem nevoie de numarul de muchii. Orice nod, in afara de
+unul terminal va avea 2 muchii pentru fiecare drum care trece prin el
+(deoarece avem muchia care intra si muchia care iese). Nodurile terminale
+au doar o muchie pentru fiecare drum. Dupa aflarea numarului de muchii se cauta
+cea mai mare dintre valori si se imparte la numarul de cai minime gasite.
+Rezultatul este scris in fisier.
